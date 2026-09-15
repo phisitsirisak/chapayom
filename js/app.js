@@ -28,6 +28,10 @@ const CLIENT_ID = (() => {
   return v;
 })();
 
+/* Staff logins survive a refresh via the same localStorage pattern — no
+ * server session, so this is just remembering which role was last signed in. */
+const ROLE_KEY = 'qr_role';
+
 /* ── server API ────────────────────────────────────────────── */
 async function api(method, path, body) {
   const opts = { method, headers: { 'X-Client-Id': CLIENT_ID } };
@@ -78,7 +82,7 @@ async function uploadMenuPhoto(itemId, file) {
 /* ── state ─────────────────────────────────────────────────── */
 const S = {
   booted: false,
-  role: 'customer', lang: 'th', cust: 'home', ownerTab: 'queue', adminTab: 'master',
+  role: localStorage.getItem(ROLE_KEY) || 'customer', lang: 'th', cust: 'home', ownerTab: 'queue', adminTab: 'master',
   service: 'dinein', tableNo: 0, custName: '', custPhone: '',
   cat: 'rec', openId: null, itemQty: 1, itemLevel: 1, itemExtras: [], itemNote: '',
   cart: [], orderNote: '', myId: null, editingId: null,
@@ -361,13 +365,14 @@ const ACT = {
   toggleNav: () => { S.menuOpen = !S.menuOpen; },
   closeNav: () => { S.menuOpen = false; },
   navOrder: () => { S.cust = 'home'; S.menuOpen = false; },
-  exitStaff: () => { S.role = 'customer'; S.menuOpen = false; },
+  exitStaff: () => { S.role = 'customer'; S.menuOpen = false; localStorage.removeItem(ROLE_KEY); },
   openLogin: () => Object.assign(S, { loginOpen: true, loginUser: '', loginPass: '', loginError: '', menuOpen: false }),
   cancelLogin: () => Object.assign(S, { loginOpen: false, loginError: '' }),
   doLogin: async () => {
     const username = S.loginUser, password = S.loginPass;
     try {
       const { role } = await api('POST', '/api/login', { username, password });
+      localStorage.setItem(ROLE_KEY, role);
       Object.assign(S, {
         role, loginOpen: false, loginUser: '', loginPass: '', loginError: '',
         adminTab: role === 'manager' ? 'dash' : S.adminTab
