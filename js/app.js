@@ -201,10 +201,10 @@ function optText(l) {
   return l.kind === 'drink' ? t.sweet + ': ' + t.standard : '—';
 }
 
-/** Drinks always offer a sweetness pick. Food offers a spice-level pick only
- *  when the item was added with "has spice-level options" checked. */
+/** Drinks offer a sweetness pick, food a spice-level pick — both gated by the
+ *  same "has options" flag, off for items like plain bottled water. */
 function levelInfo(m) {
-  if (m.kind === 'drink') return { show: true, list: SWEET, title: T().sweet };
+  if (m.kind === 'drink') return { show: m.hasSpice !== false, list: SWEET, title: T().sweet };
   return { show: m.hasSpice !== false, list: SPICE, title: T().spice };
 }
 
@@ -882,10 +882,11 @@ function itemHtml() {
       </div>
       ${levelBtns}
     </div>` : ''}
+    ${(!isDrink || m.hasSpice !== false) ? `
     <div class="sect">
       <div class="sect__title">${esc(t.extras)}</div>
       ${extraBtns}
-    </div>
+    </div>` : ''}
     <div class="sect" style="gap:8px">
       <div class="sect__title">${esc(t.noteToKitchen)}</div>
       <textarea class="fld" rows="3" data-inp="itemNote" placeholder="${esc(t.notePlaceholder)}">${esc(S.itemNote)}</textarea>
@@ -1906,6 +1907,11 @@ function qdHtml() {
       <div class="qd__owner">
         <div class="mono" style="font-size:10px;letter-spacing:.12em;color:var(--color-neutral-700)">${esc(t.ownerUpdateStatus)}</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px">${statusOpts}</div>
+        <div class="mono" style="font-size:10px;letter-spacing:.12em;color:var(--color-neutral-700);margin-top:6px">${esc(t.printKot)}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          ${hasKind(o, 'food') ? `<button class="btn-outline" data-act="print" data-id="${esc(o.id)}" data-v="food">${esc(t.printFood)}</button>` : ''}
+          ${hasKind(o, 'drink') ? `<button class="btn-outline" data-act="print" data-id="${esc(o.id)}" data-v="drink">${esc(t.printDrink)}</button>` : ''}
+        </div>
       </div>` : ''}
       <div class="modal__foot">
         <button class="ghost wide" data-act="closeQd">${esc(t.close)}</button>

@@ -242,6 +242,9 @@ def seed(conn):
         "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 1, %s)",
         [(*m, i) for i, m in enumerate(menu)],
     )
+    # ข้าวผัดกุ้ง / ผัดซีอิ๊วหมู / ข้าวหมูกระเทียม ไม่มีตัวเลือกระดับความเผ็ด
+    # น้ำเปล่า ไม่มีตัวเลือกระดับความหวานและเพิ่มพิเศษ (ใช้ has_spice flag เดียวกัน)
+    conn.execute("UPDATE menu_items SET has_spice = 0 WHERE id IN ('f2', 'f3', 'f4', 'd5')")
 
     users = [
         ("u1", "สมชาย ใจดี", "server", "081-234-5678", 1),

@@ -20,8 +20,7 @@ const EX_FOOD = [
 ];
 const EX_DRINK = [
   { id: 'noice', th: 'ไม่ใส่น้ำแข็ง',   en: 'No ice',             p: 0 },
-  { id: 'jelly', th: 'เพิ่มเจลลี่',     en: 'Add jelly',          p: 10 },
-  { id: 'togo',  th: 'ใส่แก้วพลาสติก', en: 'Plastic cup to go',  p: 0 }
+  { id: 'jelly', th: 'เพิ่มเจลลี่',     en: 'Add jelly',          p: 10 }
 ];
 
 const EXP_CATS = ['วัตถุดิบ', 'ค่าน้ำค่าไฟ', 'ค่าจ้าง', 'อุปกรณ์', 'อื่นๆ'];
