@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "qr-ordering",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "5175"],
+      "port": 5175
+    }
+  ]
+}

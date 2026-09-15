@@ -1,0 +1,374 @@
+<meta charset="utf-8">
+<title>QR Ordering Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --ink: #17181b;
+    --ink-mute: #6b6d74;
+    --line: #b8bac0;
+    --line-strong: #3d3f44;
+    --fill: #e9eaed;
+    --fill-strong: #d7d9dd;
+    --accent: #a8563f;
+    --accent-fg: #ffffff;
+    --shadow: 0 1px 2px rgba(20,20,22,.04), 0 8px 24px rgba(20,20,22,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121214;
+      --surface: #1a1b1e;
+      --ink: #eceef1;
+      --ink-mute: #9a9ca3;
+      --line: #4a4c52;
+      --line-strong: #c7c9ce;
+      --fill: #26282c;
+      --fill-strong: #313337;
+      --accent: #d98564;
+      --accent-fg: #17181b;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121214;
+    --surface: #1a1b1e;
+    --ink: #eceef1;
+    --ink-mute: #9a9ca3;
+    --line: #4a4c52;
+    --line-strong: #c7c9ce;
+    --fill: #26282c;
+    --fill-strong: #313337;
+    --accent: #d98564;
+    --accent-fg: #17181b;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans Thai", "Noto Sans Thai", system-ui, sans-serif;
+    padding: 40px clamp(16px, 4vw, 56px) 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  .masthead { display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 28px; }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .18em; color: var(--accent); text-transform: uppercase; }
+  h1 { margin: 0; font-size: clamp(26px, 3.4vw, 34px); font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .masthead p { margin: 0; max-width: 62ch; color: var(--ink-mute); font-size: 14.5px; line-height: 1.65; }
+
+  .screen-block { display: flex; flex-direction: column; gap: 20px; }
+  .screen-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .screen-title .num { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--ink-mute); }
+  .screen-title h2 { margin: 0; font-size: 19px; font-weight: 700; }
+  .screen-title .tag { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .06em; color: var(--ink-mute); padding: 3px 8px; border: 1px solid var(--line); border-radius: 3px; }
+
+  .layout { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+  .frame-wrap { position: relative; flex: 0 0 auto; max-width: 100%; overflow-x: auto; }
+  .legend { flex: 1 1 260px; display: flex; flex-direction: column; gap: 14px; min-width: 240px; padding-top: 6px; }
+  .legend-item { display: flex; gap: 10px; align-items: flex-start; }
+  .legend-num {
+    flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-fg);
+    display: flex; align-items: center; justify-content: center; font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; font-weight: 600; margin-top: 1px;
+  }
+  .legend-text b { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+  .legend-text span { display: block; font-size: 12.5px; color: var(--ink-mute); line-height: 1.55; }
+
+  .badge {
+    position: absolute; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-fg);
+    display: flex; align-items: center; justify-content: center; font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; font-weight: 600; box-shadow: var(--shadow); z-index: 5;
+  }
+
+  /* ---- phone frame (customer) ---- */
+  .phone {
+    width: 356px; padding: 16px 10px; background: var(--surface); border: 1.5px solid var(--line-strong);
+    border-radius: 30px; box-shadow: var(--shadow);
+  }
+  .phone-notch { width: 70px; height: 5px; border-radius: 3px; background: var(--fill-strong); margin: 0 auto 12px; }
+  .phone-screen {
+    width: 100%; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--surface);
+    display: flex; flex-direction: column;
+  }
+
+  .wf-hdr { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  .wf-burger { width: 26px; height: 26px; border: 1.3px solid var(--line-strong); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+  .wf-burger span { width: 13px; height: 1.3px; background: var(--line-strong); }
+  .wf-langsw { display: flex; border: 1.3px solid var(--line-strong); border-radius: 5px; overflow: hidden; }
+  .wf-langsw span { font-family: "IBM Plex Mono", monospace; font-size: 9px; padding: 4px 7px; color: var(--ink-mute); }
+  .wf-langsw span:first-child { background: var(--fill-strong); color: var(--ink); }
+
+  .wf-block { padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid var(--line); }
+  .wf-line { height: 8px; background: var(--fill); border-radius: 2px; }
+  .wf-line.title { height: 13px; width: 78%; background: var(--fill-strong); }
+  .wf-line.sub { width: 92%; }
+  .wf-line.sub2 { width: 60%; }
+  .wf-eyebrow-line { width: 34%; height: 6px; background: var(--fill); border-radius: 2px; }
+
+  .wf-photo {
+    margin: 0 14px; height: 108px; border: 1px dashed var(--line);
+    background: repeating-linear-gradient(135deg, var(--fill) 0 8px, var(--surface) 8px 16px);
+    border-radius: 3px; display: flex; align-items: center; justify-content: center;
+  }
+  .wf-photo span { font-family: "IBM Plex Mono", monospace; font-size: 9.5px; color: var(--ink-mute); background: var(--surface); padding: 2px 6px; }
+
+  .wf-section-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 6px; }
+  .wf-section-head .wf-line.title { height: 11px; width: 55%; margin: 0; }
+  .wf-live { font-family: "IBM Plex Mono", monospace; font-size: 8px; letter-spacing: .1em; color: var(--accent); display: flex; align-items: center; gap: 4px; }
+  .wf-live::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .wf-table { margin: 0 14px 12px; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .wf-trow { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .wf-trow:last-child { border-bottom: 0; }
+  .wf-trow .n { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--ink-mute); width: 12px; }
+  .wf-trow .lines { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .wf-chip { font-family: "IBM Plex Mono", monospace; font-size: 8px; padding: 3px 7px; background: var(--fill-strong); border-radius: 3px; color: var(--ink-mute); white-space: nowrap; }
+
+  .wf-cards { display: flex; gap: 8px; padding: 8px 14px 4px; }
+  .wf-svc-card { flex: 1; border: 1.3px solid var(--line-strong); border-radius: 4px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .wf-dot { width: 12px; height: 12px; border-radius: 50%; border: 1.3px solid var(--line-strong); }
+  .wf-svc-card.on .wf-dot { background: var(--line-strong); }
+
+  .wf-select { margin: 10px 14px 4px; border: 1.3px solid var(--line-strong); border-radius: 3px; padding: 9px 10px; display: flex; align-items: center; justify-content: space-between; }
+  .wf-select span:last-child { font-size: 11px; }
+  .wf-chevron { width: 7px; height: 7px; border-right: 1.3px solid var(--ink-mute); border-bottom: 1.3px solid var(--ink-mute); transform: rotate(45deg); }
+
+  .wf-cta { margin: 10px 14px 8px; background: var(--fill-strong); border-radius: 3px; padding: 13px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .wf-cta span { font-size: 12.5px; font-weight: 600; }
+
+  .wf-foot { text-align: center; padding: 4px 14px 14px; }
+  .wf-foot .wf-line { margin: 0 auto; }
+
+  /* ---- desktop frame (staff) ---- */
+  .desktop { width: 760px; flex: none; background: var(--surface); border: 1.5px solid var(--line-strong); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
+  .desktop-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .desktop-bar i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--line); }
+  .desktop-body { display: flex; min-height: 460px; }
+
+  .owner-nav { width: 168px; flex: none; border-right: 1px solid var(--line); padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; }
+  .owner-nav .wf-line.title { height: 9px; width: 70%; margin-bottom: 6px; }
+  .nav-btn { padding: 8px 10px; border-radius: 3px; font-size: 11.5px; color: var(--ink-mute); }
+  .nav-btn.on { background: var(--fill-strong); color: var(--ink); font-weight: 600; }
+  .nav-exit { margin-top: auto; font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--ink-mute); }
+
+  .owner-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .owner-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
+  .owner-head .wf-line.title { height: 12px; width: 220px; margin-bottom: 5px; }
+  .role-chip { font-family: "IBM Plex Mono", monospace; font-size: 9px; padding: 5px 10px; background: var(--line-strong); color: var(--surface); border-radius: 3px; white-space: nowrap; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+  .stat { background: var(--surface); padding: 12px 14px; display: flex; flex-direction: column; gap: 5px; }
+  .stat b { font-size: 17px; font-family: "IBM Plex Mono", monospace; }
+  .stat span { font-size: 9.5px; color: var(--ink-mute); }
+
+  .tabs-row { display: flex; align-items: center; gap: 4px; padding: 8px 14px; border-bottom: 1px solid var(--line); }
+  .tab-btn { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 3px; font-size: 11px; }
+  .tab-btn.on { background: var(--fill-strong); font-weight: 600; }
+  .tab-count { font-family: "IBM Plex Mono", monospace; font-size: 9px; background: var(--accent); color: var(--accent-fg); padding: 1px 5px; border-radius: 8px; }
+  .tabs-row .grow { flex: 1; }
+  .tabs-row .sales { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--ink-mute); }
+
+  .queue-cols { display: flex; flex: 1; min-height: 0; }
+  .queue-new { flex: 1.3; padding: 14px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
+  .queue-active { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+  .ocard { border: 1.3px solid var(--line-strong); border-radius: 4px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .ocard-top { display: flex; align-items: center; justify-content: space-between; }
+  .ocard-top .idchip { font-family: "IBM Plex Mono", monospace; font-size: 10px; }
+  .ocard-top .typechip { font-family: "IBM Plex Mono", monospace; font-size: 8px; background: var(--fill-strong); padding: 2px 6px; border-radius: 2px; }
+  .ocard-line { display: flex; gap: 8px; }
+  .ocard-line .qty { font-family: "IBM Plex Mono", monospace; font-size: 9px; color: var(--ink-mute); width: 16px; }
+  .ocard-line .txt { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .ocard-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 4px; border-top: 1px dashed var(--line); }
+  .ocard-foot b { font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+  .ocard-actions { display: flex; gap: 6px; }
+  .btn-accept { flex: 1; text-align: center; padding: 8px; background: var(--line-strong); color: var(--surface); border-radius: 3px; font-size: 11px; font-weight: 600; }
+  .btn-reject { padding: 8px 10px; border: 1.3px solid var(--line-strong); border-radius: 3px; font-size: 11px; }
+
+  .qsub { font-size: 11px; font-weight: 700; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .qrow { display: flex; align-items: center; gap: 8px; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+  .qrow .qd { width: 8px; height: 8px; border-radius: 50%; background: var(--fill-strong); border: 1px solid var(--line-strong); flex: none; }
+  .qrow .lines { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .qlink { margin-top: auto; padding-top: 8px; font-size: 10.5px; font-weight: 600; color: var(--ink-mute); }
+
+  footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: 12px; color: var(--ink-mute); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  footer .mono { color: var(--ink-mute); }
+</style>
+
+<div class="masthead">
+  <div class="eyebrow">Low-fidelity · Screen Wireframes</div>
+  <h1>ระบบสั่งอาหาร QR — ภาพร่างหน้าจอหลัก</h1>
+  <p>อ้างอิงโครงสร้างจริงจากระบบที่พัฒนาแล้ว 2 หน้าจอ: หน้าจอหลักฝั่งลูกค้า (มือถือ) และหน้าจอจัดการคิวออเดอร์ฝั่งพนักงาน (แท็บเล็ต/เดสก์ท็อป) — ใช้แสดงโครงสร้างและตำแหน่งองค์ประกอบ ไม่ใช่การออกแบบภาพสุดท้าย</p>
+</div>
+
+<div class="screen-block">
+  <div class="screen-title">
+    <span class="num mono">SCREEN 01</span>
+    <h2>หน้าจอหลัก — ฝั่งลูกค้า</h2>
+    <span class="tag">Mobile · 375px</span>
+  </div>
+  <div class="layout">
+    <div class="frame-wrap">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="wf-hdr">
+            <div class="wf-burger"><span></span><span></span><span></span></div>
+            <div class="wf-langsw"><span>TH</span><span>EN</span></div>
+          </div>
+
+          <div class="wf-block">
+            <div class="wf-eyebrow-line"></div>
+            <div class="wf-line title"></div>
+            <div class="wf-line sub2" style="height:13px;width:50%"></div>
+            <div class="wf-line sub"></div>
+          </div>
+
+          <div style="padding:12px 0">
+            <div class="wf-photo"><span>รูปหน้าร้าน</span></div>
+          </div>
+
+          <div class="wf-section-head">
+            <div class="wf-line title"></div>
+            <div class="wf-live">REALTIME</div>
+          </div>
+          <div style="padding:0 14px 8px"><div class="wf-line sub" style="width:80%"></div></div>
+          <div class="wf-table">
+            <div class="wf-trow"><span class="n">1</span><span class="lines"><span class="wf-line" style="width:55%"></span><span class="wf-line" style="width:35%;height:6px"></span></span><span class="wf-chip">สถานะ</span></div>
+            <div class="wf-trow"><span class="n">2</span><span class="lines"><span class="wf-line" style="width:60%"></span><span class="wf-line" style="width:30%;height:6px"></span></span><span class="wf-chip">สถานะ</span></div>
+            <div class="wf-trow"><span class="n">3</span><span class="lines"><span class="wf-line" style="width:45%"></span><span class="wf-line" style="width:38%;height:6px"></span></span><span class="wf-chip">สถานะ</span></div>
+          </div>
+
+          <div style="padding:4px 14px 0"><div class="wf-line" style="width:60%;height:9px"></div></div>
+          <div class="wf-cards">
+            <div class="wf-svc-card on"><div class="wf-dot"></div><span class="wf-line" style="width:70%"></span><span class="wf-line" style="width:90%;height:6px"></span></div>
+            <div class="wf-svc-card"><div class="wf-dot"></div><span class="wf-line" style="width:70%"></span><span class="wf-line" style="width:90%;height:6px"></span></div>
+          </div>
+
+          <div class="wf-select"><span class="wf-line" style="width:55%;margin:0"></span><div class="wf-chevron"></div></div>
+
+          <div class="wf-cta"><span>ดูเมนูและสั่งอาหาร</span><span class="mono">→</span></div>
+
+          <div class="wf-foot"><div class="wf-line" style="width:70%"></div></div>
+        </div>
+      </div>
+
+      <div class="badge" style="top:8px; left:8px;">1</div>
+      <div class="badge" style="top:78px; left:8px;">2</div>
+      <div class="badge" style="top:198px; left:8px;">3</div>
+      <div class="badge" style="top:262px; left:8px;">4</div>
+      <div class="badge" style="top:428px; left:8px;">5</div>
+      <div class="badge" style="top:492px; left:8px;">6</div>
+      <div class="badge" style="top:548px; left:8px;">7</div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-num">1</span><span class="legend-text"><b>แถบหัวเว็บลอย (sticky)</b><span>ปุ่มเมนูแฮมเบอร์เกอร์เปิด drawer ด้านซ้าย + ปุ่มสลับภาษา TH/EN ด้านขวา</span></span></div>
+      <div class="legend-item"><span class="legend-num">2</span><span class="legend-text"><b>ข้อมูลร้าน</b><span>ป้าย "สแกน QR สำเร็จ" ชื่อร้าน และคำโปรยสั้นๆ</span></span></div>
+      <div class="legend-item"><span class="legend-num">3</span><span class="legend-text"><b>รูปหน้าร้าน</b><span>ภาพประกอบแบบ responsive ปรับความสูงตามหน้าจอ</span></span></div>
+      <div class="legend-item"><span class="legend-num">4</span><span class="legend-text"><b>ตารางคิว Realtime</b><span>ดึงข้อมูลใหม่ทุก 2.5 วิ เรียงจากคิวที่รอนานที่สุดเป็นลำดับ 1</span></span></div>
+      <div class="legend-item"><span class="legend-num">5</span><span class="legend-text"><b>เลือกรูปแบบรับบริการ</b><span>การ์ดเลือกได้ 2 แบบ: ทานที่ร้าน / สั่งกลับบ้าน</span></span></div>
+      <div class="legend-item"><span class="legend-num">6</span><span class="legend-text"><b>เลือกโต๊ะ</b><span>โต๊ะที่มีออเดอร์ค้างอยู่แล้วจะถูกล็อคทันทีที่ฝั่งเซิร์ฟเวอร์</span></span></div>
+      <div class="legend-item"><span class="legend-num">7</span><span class="legend-text"><b>ปุ่มเริ่มสั่งอาหาร</b><span>CTA หลักของหน้า พาไปหน้าเมนู</span></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="screen-block">
+  <div class="screen-title">
+    <span class="num mono">SCREEN 02</span>
+    <h2>หน้าจอจัดการคิวออเดอร์ — ฝั่งพนักงาน</h2>
+    <span class="tag">Desktop / Tablet · 900px+</span>
+  </div>
+  <div class="layout">
+    <div class="frame-wrap">
+      <div class="desktop">
+        <div class="desktop-bar"><i></i><i></i><i></i></div>
+        <div class="desktop-body">
+          <div class="owner-nav">
+            <div class="wf-line title"></div>
+            <div class="nav-btn on">คิวใหม่</div>
+            <div class="nav-btn">ผังโต๊ะ</div>
+            <div class="nav-btn">บิลเปิด</div>
+            <div class="nav-exit">← กลับหน้าหลัก</div>
+          </div>
+          <div class="owner-main">
+            <div class="owner-head">
+              <div>
+                <div class="wf-line title"></div>
+                <div class="wf-line" style="width:160px"></div>
+              </div>
+              <span class="role-chip">พนักงาน</span>
+            </div>
+            <div class="stats-row">
+              <div class="stat"><b>9</b><span>ออเดอร์วันนี้</span></div>
+              <div class="stat"><b>฿2,140</b><span>ยอดขายวันนี้</span></div>
+              <div class="stat"><b>3</b><span>โต๊ะไม่ว่าง</span></div>
+              <div class="stat"><b>2</b><span>รอดำเนินการ</span></div>
+            </div>
+            <div class="tabs-row">
+              <div class="tab-btn on">คิวใหม่ <span class="tab-count">2</span></div>
+              <div class="tab-btn">ผังโต๊ะ</div>
+              <div class="tab-btn">บิลเปิด</div>
+              <div class="grow"></div>
+              <div class="sales">วันนี้ · ฿2,140</div>
+            </div>
+            <div class="queue-cols">
+              <div class="queue-new">
+                <div class="ocard">
+                  <div class="ocard-top"><span class="idchip">A-1046</span><span class="typechip">โต๊ะ 2</span></div>
+                  <div class="ocard-line"><span class="qty">2×</span><span class="txt"><span class="wf-line" style="width:60%"></span><span class="wf-line" style="width:40%;height:6px"></span></span></div>
+                  <div class="ocard-line"><span class="qty">1×</span><span class="txt"><span class="wf-line" style="width:50%"></span><span class="wf-line" style="width:35%;height:6px"></span></span></div>
+                  <div class="ocard-foot"><span class="mono" style="font-size:10px;color:var(--ink-mute)">17:44</span><b>฿180</b></div>
+                  <div class="ocard-actions"><span class="btn-accept">รับออเดอร์</span><span class="btn-reject">ปฏิเสธ</span></div>
+                </div>
+                <div class="ocard">
+                  <div class="ocard-top"><span class="idchip">A-1047</span><span class="typechip">กลับบ้าน</span></div>
+                  <div class="ocard-line"><span class="qty">1×</span><span class="txt"><span class="wf-line" style="width:65%"></span><span class="wf-line" style="width:30%;height:6px"></span></span></div>
+                  <div class="ocard-foot"><span class="mono" style="font-size:10px;color:var(--ink-mute)">17:51</span><b>฿70</b></div>
+                  <div class="ocard-actions"><span class="btn-accept">รับออเดอร์</span><span class="btn-reject">ปฏิเสธ</span></div>
+                </div>
+              </div>
+              <div class="queue-active">
+                <div class="qsub">กำลังดำเนินการ (2)</div>
+                <div class="qrow"><span class="qd"></span><span class="lines"><span class="wf-line" style="width:70%"></span><span class="wf-line" style="width:50%;height:6px"></span></span></div>
+                <div class="qrow"><span class="qd"></span><span class="lines"><span class="wf-line" style="width:60%"></span><span class="wf-line" style="width:45%;height:6px"></span></span></div>
+                <div class="qlink">บิลที่เปิดอยู่ →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="badge" style="top:66px; left:8px;">1</div>
+      <div class="badge" style="top:66px; left:184px;">2</div>
+      <div class="badge" style="top:66px; right:8px;">2</div>
+      <div class="badge" style="top:148px; left:184px;">3</div>
+      <div class="badge" style="top:222px; left:184px;">4</div>
+      <div class="badge" style="top:270px; left:198px;">5</div>
+      <div class="badge" style="top:270px; right:8px;">6</div>
+    </div>
+  </div>
+  <div class="legend" style="flex-direction:row;flex-wrap:wrap;gap:20px 32px;max-width:760px">
+    <div class="legend-item" style="flex:1 1 220px"><span class="legend-num">1</span><span class="legend-text"><b>แถบเมนูด้านข้าง</b><span>สลับ 3 มุมมอง: คิวใหม่ / ผังโต๊ะ / บิลเปิด</span></span></div>
+    <div class="legend-item" style="flex:1 1 220px"><span class="legend-num">2</span><span class="legend-text"><b>ข้อมูลร้าน + ป้ายตำแหน่ง</b><span>ชื่อร้านและ role ของผู้ใช้งานที่ล็อกอินอยู่</span></span></div>
+    <div class="legend-item" style="flex:1 1 220px"><span class="legend-num">3</span><span class="legend-text"><b>แถบสรุปตัวเลข</b><span>ออเดอร์วันนี้ ยอดขาย โต๊ะไม่ว่าง งานค้าง — อัปเดตสด</span></span></div>
+    <div class="legend-item" style="flex:1 1 220px"><span class="legend-num">4</span><span class="legend-text"><b>แท็บ + ยอดขายสะสม</b><span>ตัวเลขค้างบนแท็บบอกจำนวนออเดอร์ใหม่ที่รอรับ</span></span></div>
+    <div class="legend-item" style="flex:1 1 220px"><span class="legend-num">5</span><span class="legend-text"><b>การ์ดออเดอร์ใหม่</b><span>รายการอาหาร ราคารวม ปุ่มรับ/ปฏิเสธ</span></span></div>
+    <div class="legend-item" style="flex:1 1 220px"><span class="legend-num">6</span><span class="legend-text"><b>ออเดอร์ที่กำลังดำเนินการ</b><span>กดดูสถานะแต่ละขั้น (รับ/ปรุง/พร้อมเสิร์ฟ) ได้</span></span></div>
+  </div>
+</div>
+
+<footer>
+  <span>ระบบสั่งอาหาร QR — เอกสารประกอบโครงงานพิเศษ</span>
+  <span class="mono">wireframe · low-fidelity</span>
+</footer>
