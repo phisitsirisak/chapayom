@@ -180,10 +180,8 @@ textarea.fld { resize: none; }
 .queue__where { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .queue__empty { padding: 18px; font-size: 13px; color: var(--color-neutral-600); }
 
-.svc { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 13px 14px; border: 2px solid var(--color-text); cursor: pointer; text-align: left; }
-.svc__dot { width: 14px; height: 14px; flex: none; margin-top: 3px; }
-.tablepick { display: flex; flex-direction: column; gap: 8px; padding: 13px 14px; background: var(--color-neutral-100); border: 2px solid var(--color-text); }
-.tablepick select { width: 100%; padding: 12px; border: 2px solid var(--color-text); background: var(--color-bg); font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; }
+.qrTable { display: flex; flex-direction: column; gap: 6px; padding: 16px 14px; background: var(--color-neutral-100); border: 2px solid var(--color-text); }
+.qrTable__no { font-size: 26px; font-weight: 800; }
 
 /* 02 table */
 .scr__head { padding: 16px 18px; border-bottom: 2px solid var(--color-text); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }

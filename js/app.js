@@ -32,6 +32,15 @@ const CLIENT_ID = (() => {
  * server session, so this is just remembering which role was last signed in. */
 const ROLE_KEY = 'qr_role';
 
+/* A table's own QR encodes ?table=N in its URL — the guest lands already
+ * locked to that table with no picker shown. No param at all is a generic
+ * link (e.g. a counter QR), kept takeaway-only since dine-in now only comes
+ * from scanning an actual table's QR. */
+const QR_TABLE = (() => {
+  const n = Number(new URLSearchParams(location.search).get('table'));
+  return TABLE_NOS.includes(n) ? n : null;
+})();
+
 /* ── server API ────────────────────────────────────────────── */
 async function api(method, path, body) {
   const opts = { method, headers: { 'X-Client-Id': CLIENT_ID } };
@@ -83,7 +92,7 @@ async function uploadMenuPhoto(itemId, file) {
 const S = {
   booted: false,
   role: localStorage.getItem(ROLE_KEY) || 'customer', lang: 'th', cust: 'home', ownerTab: 'queue', adminTab: 'master',
-  service: 'dinein', tableNo: 0, custName: '', custPhone: '',
+  service: QR_TABLE ? 'dinein' : 'takeaway', tableNo: QR_TABLE || 0, qrTable: !!QR_TABLE, custName: '', custPhone: '',
   cat: 'rec', openId: null, itemQty: 1, itemLevel: 1, itemExtras: [], itemNote: '',
   cart: [], orderNote: '', myId: null, editingId: null,
   billId: null, slip: null, cancelAsk: false, toast: '',
@@ -384,13 +393,8 @@ const ACT = {
 
   /* customer navigation */
   go: el => { S.cust = el.dataset.v; },
-  goTable: () => Object.assign(S, { cust: 'table', service: 'dinein' }),
-  service: el => { S.service = el.dataset.v; },
   setTable: el => { S.tableNo = Number(el.dataset.v) || 0; },
-  startFlow: () => {
-    if (S.service === 'dinein' && !S.tableNo) { flash(T().pickTableFirst); return; }
-    S.cust = 'menu';
-  },
+  startFlow: () => { S.cust = 'menu'; },
   cat: el => { S.cat = el.dataset.v; },
   openItem: el => openItem(el.dataset.id),
 
@@ -684,34 +688,16 @@ function homeHtml() {
     </button>`;
   }).join('');
 
-  const svcOpts = [
-    { key: 'dinein', label: t.dinein, hint: t.dineinHint },
-    { key: 'takeaway', label: t.takeaway, hint: t.takeawayHint }
-  ].map(o => {
-    const on = S.service === o.key;
-    return `
-    <button class="svc" data-act="service" data-v="${o.key}" style="background:${on ? INK : 'transparent'};color:${on ? GROUND : INK}">
-      <span class="svc__dot" style="border:2px solid ${on ? GROUND : INK};background:${on ? RED : 'transparent'}"></span>
-      <span style="display:flex;flex-direction:column;gap:2px">
-        <span style="font-size:15px;font-weight:700">${esc(o.label)}</span>
-        <span style="font-size:12px;opacity:.72">${esc(o.hint)}</span>
-      </span>
-    </button>`;
-  }).join('');
-
-  const tableSelect = S.service === 'dinein' ? `
-    <div class="tablepick">
-      <label class="mono" style="font-size:10px;letter-spacing:.1em;color:var(--color-neutral-700)">${esc(t.chooseTable)}</label>
-      <select data-chg="table">
-        <option value="">${esc(t.pickTableFirst)}</option>
-        ${TABLE_NOS.map(no => {
-          const busy = tableBusy(no);
-          return `<option value="${no}"${busy ? ' disabled' : ''}${S.tableNo === no ? ' selected' : ''}>${esc(t.tableLabel + ' ' + no + (busy ? ' · ' + t.tableBusy : ''))}</option>`;
-        }).join('')}
-      </select>
-    </div>` : '';
-
-  const blocked = S.service === 'dinein' && !S.tableNo;
+  const startPanel = S.qrTable ? `
+    <div class="qrTable">
+      <span class="mono" style="font-size:10px;letter-spacing:.12em;color:var(--color-neutral-700)">${esc(t.dinein)}</span>
+      <div class="qrTable__no">${esc(t.tableLabel)} ${S.tableNo}</div>
+      <div style="font-size:12px;color:var(--color-neutral-700)">${esc(t.qrTableHint)}</div>
+    </div>` : `
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <div style="font-size:15px;font-weight:700">${esc(t.takeaway)}</div>
+      <div style="font-size:12px;color:var(--color-neutral-700)">${esc(t.takeawayHint)}</div>
+    </div>`;
 
   return `
   <div class="${screenCls}">
@@ -732,12 +718,8 @@ function homeHtml() {
         ${qo.length ? `<div class="queue__scroll">${rows}</div>` : `<div class="queue__empty">${esc(t.queueEmpty)}</div>`}
       </div>
       <div class="home__start">
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="font-size:13px;font-weight:700">${esc(t.pickService)}</div>
-          ${svcOpts}
-        </div>
-        ${tableSelect}
-        <button class="btn-cta" data-act="startFlow"${blocked ? ' disabled' : ''} style="opacity:${blocked ? 0.45 : 1}">
+        ${startPanel}
+        <button class="btn-cta" data-act="startFlow">
           <span class="btn-cta__label">${esc(t.toMenu)}</span><span class="btn-cta__arrow">→</span>
         </button>
         <div class="pretty" style="font-size:11px;color:var(--color-neutral-600);line-height:1.7">${esc(t.payAtCounter)}</div>
